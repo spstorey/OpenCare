@@ -1,0 +1,38 @@
+package spssoftware.opencare.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import spssoftware.opencare.domain.User;
+import spssoftware.opencare.resource.Users;
+import spssoftware.opencare.service.UserService;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @RequestMapping(produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
+    public Users list() {
+
+        Users users = new Users();
+        users.setUsers(userService.list());
+
+        return users;
+    }
+
+    @RequestMapping(value = "/{id}", produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
+    public User get(@PathVariable("id") String id) {
+
+        return userService.get(id);
+    }
+}
+

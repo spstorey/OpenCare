@@ -1,0 +1,40 @@
+package spssoftware.opencare.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import spssoftware.opencare.domain.Patient;
+import spssoftware.opencare.resource.Patients;
+import spssoftware.opencare.service.PatientService;
+
+@RestController
+@RequestMapping("/patients")
+public class PatientController {
+
+    private PatientService patientService;
+
+    @Autowired
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
+    }
+
+    @RequestMapping(produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
+    public Patients list(@RequestParam(value = "clinicId", required = false) String clinicId,
+                         @RequestParam(value = "surname", required = false) String surname,
+                         @RequestParam(value = "postCode", required = false) String postCode) {
+
+        Patients patients = new Patients();
+        patients.setPatients(patientService.list(clinicId, surname, postCode));
+
+        return patients;
+    }
+
+    @RequestMapping(value = "/{id}", produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
+    public Patient get(@PathVariable("id") String id) {
+
+        return patientService.get(id);
+    }
+}
