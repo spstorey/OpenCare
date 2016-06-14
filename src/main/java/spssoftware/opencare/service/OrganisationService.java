@@ -1,13 +1,10 @@
 package spssoftware.opencare.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import spssoftware.opencare.domain.Organisation;
-import spssoftware.opencare.domain.User;
 import spssoftware.opencare.repository.OrganisationRepository;
-import spssoftware.opencare.repository.UserRepository;
 
 import java.util.List;
 
