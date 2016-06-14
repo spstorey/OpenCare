@@ -16,8 +16,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import spssoftware.opencare.config.Config;
 import spssoftware.opencare.config.Environment;
-import uk.co.autotrader.traverson.Traverson;
-import uk.co.autotrader.traverson.http.ApacheHttpTraversonClientAdapter;
 
 import java.util.Map;
 
@@ -78,10 +76,5 @@ public class App extends SpringApplication {
                 .setDefaultRequestConfig(requestConfig)
                 .setConnectionManager(cm)
                 .build();
-    }
-
-    @Bean
-    public Traverson getTraverson() {
-        return new Traverson(new ApacheHttpTraversonClientAdapter(getHttpClient()));
     }
 }

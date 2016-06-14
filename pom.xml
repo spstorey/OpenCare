@@ -131,11 +131,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.4.1</version>
         </dependency>
-        <dependency>
-            <groupId>uk.co.autotrader</groupId>
-            <artifactId>traverson4j-hc4</artifactId>
-            <version>0.7</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>uk.co.autotrader</groupId>-->
+            <!--<artifactId>traverson4j-hc4</artifactId>-->
+            <!--<version>0.7</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.googlecode.jsontoken</groupId>
             <artifactId>jsontoken</artifactId>
