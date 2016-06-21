@@ -47,13 +47,19 @@ create table user (
   date_of_birth date,
   username varchar2(50),
   password varchar2(50),
-  role_id varchar2(100),
   status varchar2(20),
   primary key (id)
 );
 
-insert into user (id, title, first_name, middle_names, surname, username, password, role_id, status)
-values ('2e025226-80af-4a65-9580-7e78c0379d19','Mrs','Sharon','Storey','bazstorey','letmein','2e025226-80af-4a65-9580-7e78c0379d19','4f9c3ed9-e6ca-4204-9435-b84cbdea1e78','ENABLED');
+insert into user (id, title, first_name, middle_names, surname, username, password, status)
+values ('2e025226-80af-4a65-9580-7e78c0379d19','Mrs','Sharon','','Storey','bazstorey','letmein','ENABLED');
+
+create table user_roles (user_id varchar2(100),
+                         role varchar2(100),
+                         primary key (user_id, role)
+);
+
+insert into user_roles (user_id, role) values ('2e025226-80af-4a65-9580-7e78c0379d19', 'Physician Associate');
 
 create table organisation_type (
   id varchar2(100),
@@ -70,14 +76,14 @@ create table organisation (
   name varchar2(200),
   description varchar2(500),
   website_url varchar2(500),
-  organisation_type varchar2(100),
+  type varchar2(100),
   primary key (id)
 );
 
-insert into organisation (id, name, organisation_type) values ('4f9c3ed9-e6ca-4204-9435-b84cbdea1e78','Stepping Hill Hospital','Hospital');
-insert into organisation (id, name, organisation_type) values ('ff59f462-3b04-44fe-9222-b370ca71e996','Sally Scott Physio','Physiotherapy Practice');
-insert into organisation (id, name, organisation_type) values ('9b84cbde-e6ca-4204-9435-a1e784f9c3ed','Manchester Royal Infirmary','Hospital');
-insert into organisation (id, name, organisation_type) values ('b370ca71-3b04-44fe-9222-e996ff59f462','Salford Royal Infirmary','Hospital');
+insert into organisation (id, name, type) values ('4f9c3ed9-e6ca-4204-9435-b84cbdea1e78','Stepping Hill Hospital','Hospital');
+insert into organisation (id, name, type) values ('ff59f462-3b04-44fe-9222-b370ca71e996','Sally Scott Physio','Physiotherapy Practice');
+insert into organisation (id, name, type) values ('9b84cbde-e6ca-4204-9435-a1e784f9c3ed','Manchester Royal Infirmary','Hospital');
+insert into organisation (id, name, type) values ('b370ca71-3b04-44fe-9222-e996ff59f462','Salford Royal Infirmary','Hospital');
 
 create table user_organisation_link (
   id varchar2(100),
@@ -100,7 +106,7 @@ create table address (
   id varchar2(100),
   patient_id varchar2(100),
   organisation_id varchar2(100),
-  address_type varchar2(100),
+  type varchar2(100),
   house_name_number varchar2(100),
   street varchar2(100),
   locality varchar2(100),
@@ -111,7 +117,7 @@ create table address (
   primary key (id)
 );
 
-insert into address (id, patient_id, address_type, house_name_number, street, locality, town, county, postcode)
+insert into address (id, patient_id, type, house_name_number, street, locality, town, county, postcode)
 values ('b144a1f1-3beb-4223-a244-0bd8ed5e3c8f','2e025226-80af-4a65-9580-7e78c0379d19','Home','5','Langford Road','Heaton Chapel','Stockport','Cheshire','SK45BR');
 
 create table clinic (

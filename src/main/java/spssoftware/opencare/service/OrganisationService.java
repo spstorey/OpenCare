@@ -22,8 +22,9 @@ public class OrganisationService {
     }
 
     public List<Organisation> list(String name, String town, String county,
-                                               String country, String postCode) {
-        return organisationRepository.list(name, town, county, country, postCode);
+                                   String country, String postCode,
+                                   String type) {
+        return organisationRepository.list(name, town, county, country, postCode, type);
     }
 
     public Organisation get(String id) {

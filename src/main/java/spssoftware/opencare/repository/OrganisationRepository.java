@@ -29,7 +29,8 @@ public class OrganisationRepository {
     }
 
     public List<Organisation> list(String name, String town, String county,
-                                               String country, String postCode) {
+                                   String country, String postCode,
+                                   String type) {
 
         SelectJoinStep from = connection.select(ORGANISATION.fields()).from(ORGANISATION);
 
@@ -38,6 +39,9 @@ public class OrganisationRepository {
         }
 
         SelectConditionStep where = from.where(ORGANISATION.ID.isNotNull());
+        if (name != null) {
+            where = where.and(ORGANISATION.NAME.eq(name));
+        }
         if (town != null) {
             where = where.and(ADDRESS.TOWN.eq(town));
         }
@@ -50,8 +54,8 @@ public class OrganisationRepository {
         if (postCode != null) {
             where = where.and(ADDRESS.POSTCODE.eq(postCode.replaceAll(" ", "").toUpperCase()));
         }
-        if (name != null) {
-            where = where.and(ORGANISATION.NAME.eq(name));
+        if (type != null) {
+            where = where.and(ORGANISATION.TYPE.eq(type));
         }
 
         return where.fetchInto(Organisation.class);
@@ -67,7 +71,7 @@ public class OrganisationRepository {
             record.setId(UUID.randomUUID().toString());
             record.setName(organisation.getName());
             record.setDescription(organisation.getDescription());
-            record.setOrganisationType(organisation.getOrganisationType());
+            record.setType(organisation.getType());
             record.setWebsiteUrl(organisation.getWebsiteUrl());
             connection.newRecord(ORGANISATION, record).store();
             return record.getId();
@@ -82,7 +86,7 @@ public class OrganisationRepository {
             connection.update(ORGANISATION)
                     .set(ORGANISATION.NAME, organisation.getName())
                     .set(ORGANISATION.DESCRIPTION, organisation.getDescription())
-                    .set(ORGANISATION.ORGANISATION_TYPE, organisation.getOrganisationType())
+                    .set(ORGANISATION.TYPE, organisation.getType())
                     .set(ORGANISATION.WEBSITE_URL, organisation.getWebsiteUrl())
                     .where(ORGANISATION.ID.eq(organisation.getId()));
         } catch (Exception e) {

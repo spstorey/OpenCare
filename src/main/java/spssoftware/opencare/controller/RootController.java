@@ -30,7 +30,7 @@ public class RootController {
 
         root.add(linkTo(methodOn(RootController.class).list()).withSelfRel());
         //root.add(linkTo(methodOn(UserController.class).list()).withRel("users"));
-        root.add(linkTo(methodOn(OrganisationController.class).list(null,null,null,null,null)).withRel("organisations"));
+        root.add(linkTo(methodOn(OrganisationController.class).list(null,null,null,null,null,null)).withRel("organisations"));
         //root.add(linkTo(methodOn(PatientController.class).list(null,null,null)).withRel("patients"));
         return root;
     }

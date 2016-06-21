@@ -36,22 +36,24 @@ public class OrganisationController {
         this.organisationSummaryResourceAssembler = organisationSummaryResourceAssembler;
     }
 
-    @RequestMapping(produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(
+            produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
     public Resources<OrganisationSummaryResource> list(@RequestParam(value = "name", required = false) String name,
                                                        @RequestParam(value = "town", required = false) String town,
                                                        @RequestParam(value = "county", required = false) String county,
                                                        @RequestParam(value = "postCode", required = false) String postCode,
-                                                       @RequestParam(value = "country", required = false) String country
-    ) {
+                                                       @RequestParam(value = "country", required = false) String country,
+                                                       @RequestParam(value = "type", required = false) String type) {
         return new Resources<>(
-                organisationService.list(name, town, county, country, postCode)
+                organisationService.list(name, town, county, country, postCode, type)
                         .stream()
                         .map(o -> organisationSummaryResourceAssembler.toResource(o)).collect(Collectors.toList()),
-                linkTo(methodOn(OrganisationController.class).list(name, town, county, postCode, country)).withSelfRel()
+                linkTo(methodOn(OrganisationController.class).list(name, town, county, postCode, country, type)).withSelfRel()
         );
     }
 
-    @RequestMapping(value = "/{id}",
+    @RequestMapping(
+            value = "/{id}",
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
     public OrganisationResource get(@PathVariable("id") String id) {
 
@@ -60,7 +62,8 @@ public class OrganisationController {
     }
 
 
-    @RequestMapping(method = RequestMethod.POST,
+    @RequestMapping(
+            method = RequestMethod.POST,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public OrganisationResource add(@RequestBody Organisation organisation) {
@@ -70,7 +73,8 @@ public class OrganisationController {
         return get(id);
     }
 
-    @RequestMapping(value = "/{id}",
+    @RequestMapping(
+            value = "/{id}",
             method = RequestMethod.PUT,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
