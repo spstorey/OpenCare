@@ -6,14 +6,13 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import spssoftware.opencare.domain.Organisation;
-import spssoftware.opencare.resource.OrganisationResource;
-import spssoftware.opencare.resource.OrganisationSummaryResource;
-import spssoftware.opencare.resource.assembler.OrganisationResourceAssembler;
-import spssoftware.opencare.resource.assembler.SummaryResourceAssembler;
+import spssoftware.opencare.resource.Organisation;
+import spssoftware.opencare.resource.assembler.OrganisationAssembler;
 import spssoftware.opencare.service.OrganisationService;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -24,41 +23,36 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class OrganisationController {
 
     private OrganisationService organisationService;
-    private OrganisationResourceAssembler organisationResourceAssembler;
-    private SummaryResourceAssembler organisationSummaryResourceAssembler;
+    private OrganisationAssembler organisationAssembler;
 
     @Autowired
     public OrganisationController(OrganisationService organisationService,
-                                  OrganisationResourceAssembler organisationResourceAssembler,
-                                  SummaryResourceAssembler organisationSummaryResourceAssembler) {
+                                  OrganisationAssembler organisationAssembler) {
+
         this.organisationService = organisationService;
-        this.organisationResourceAssembler = organisationResourceAssembler;
-        this.organisationSummaryResourceAssembler = organisationSummaryResourceAssembler;
+        this.organisationAssembler = organisationAssembler;
     }
 
     @RequestMapping(
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
-    public Resources<OrganisationSummaryResource> list(@RequestParam(value = "name", required = false) String name,
-                                                       @RequestParam(value = "town", required = false) String town,
-                                                       @RequestParam(value = "county", required = false) String county,
-                                                       @RequestParam(value = "postCode", required = false) String postCode,
-                                                       @RequestParam(value = "country", required = false) String country,
-                                                       @RequestParam(value = "type", required = false) String type) {
+    public Resources<Organisation> find(@RequestParam(value = "fields", required = false) List<String> fields,
+                                        @RequestParam(value = "constraints", required = false)  MultiValueMap<String, String> constraints) {
         return new Resources<>(
-                organisationService.list(name, town, county, country, postCode, type)
+                organisationService.find(fields, constraints)
                         .stream()
-                        .map(o -> organisationSummaryResourceAssembler.toResource(o)).collect(Collectors.toList()),
-                linkTo(methodOn(OrganisationController.class).list(name, town, county, postCode, country, type)).withSelfRel()
+                        .map(o -> organisationAssembler.toResource(o)).collect(Collectors.toList())
+//                ,
+//                linkTo(methodOn(OrganisationController.class).find(fields, constraints)).withSelfRel()
         );
     }
 
     @RequestMapping(
             value = "/{id}",
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
-    public OrganisationResource get(@PathVariable("id") String id) {
+    public Organisation get(@PathVariable("id") String id) {
 
-        Organisation entity = organisationService.get(id);
-        return organisationResourceAssembler.toResource(entity);
+        spssoftware.opencare.domain.Organisation entity = organisationService.get(id);
+        return organisationAssembler.toResource(entity);
     }
 
 
@@ -66,11 +60,9 @@ public class OrganisationController {
             method = RequestMethod.POST,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OrganisationResource add(@RequestBody Organisation organisation) {
+    public Organisation add(@RequestBody spssoftware.opencare.domain.Organisation organisation) {
 
-        String id = organisationService.add(organisation);
-
-        return get(id);
+        return organisationAssembler.toResource(organisationService.save(organisation));
     }
 
     @RequestMapping(
@@ -78,19 +70,17 @@ public class OrganisationController {
             method = RequestMethod.PUT,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OrganisationResource update(@PathVariable("id") String id, @RequestBody Organisation organisation) {
+    public Organisation update(@PathVariable("id") String id, @RequestBody spssoftware.opencare.domain.Organisation organisation) {
 
-        organisation.setId(id);
-        organisationService.update(organisation);
-
-        return get(organisation.getId());
+        organisation.setOrganisationId(id);
+        return organisationAssembler.toResource(organisationService.save(organisation));
     }
 
     @RequestMapping(value = "/{id}",
             method = RequestMethod.PATCH,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public OrganisationResource patch(@PathVariable("id") String id, @RequestBody JSONObject patch) {
+    public Organisation patch(@PathVariable("id") String id, @RequestBody JSONObject patch) {
 
         organisationService.patch(id, patch);
 
