@@ -6,8 +6,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import spssoftware.opencare.config.Config;
-import spssoftware.opencare.config.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,8 +16,6 @@ public class Steps {
     //private Traverson traverson = new Traverson(new ApacheHttpTraversonClientAdapter(httpClient));
 
     //private Response lastTraversonResponse;
-
-    private static final Config config = Environment.getEnvironment().getConfig();
 
     @Before
     public void beforeScenario(Scenario scenario) throws Throwable {

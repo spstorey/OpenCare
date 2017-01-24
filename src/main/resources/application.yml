@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    schema: opencare
+    url: jdbc:h2:./target/runtime-db;AUTO_SERVER=TRUE;CACHE_SIZE=131072;MVCC=true
+    username: sa
+    password:
+    hikari:
+      idle-timeout: 10000
+
+  h2:
+    console:
+      enabled: true
+
+  jooq:
+    sql-dialect: H2
+
+flyway:
+  schemas: opencare
+
+endpoints:
+  metrics:
+    enabled: false
