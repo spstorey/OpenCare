@@ -1,5 +1,8 @@
 package spssoftware.opencare.domain;
 
-public class Organisation extends spssoftware.opencare.generated.tables.pojos.Organisation {
+import lombok.Data;
+
+@Data
+public class Organisation extends spssoftware.generated.tables.pojos.Organisation {
 
 }

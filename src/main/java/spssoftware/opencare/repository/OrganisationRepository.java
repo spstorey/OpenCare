@@ -1,25 +1,20 @@
 package spssoftware.opencare.repository;
 
-import org.jooq.DSLContext;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectJoinStep;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.base.CaseFormat;
+import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import spssoftware.opencare.domain.Organisation;
-import spssoftware.opencare.generated.tables.records.OrganisationRecord;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
+import java.util.Set;
 
-import static spssoftware.opencare.generated.tables.Address.ADDRESS;
-import static spssoftware.opencare.generated.tables.Organisation.ORGANISATION;
+import static spssoftware.generated.tables.Organisation.ORGANISATION;
 
 @Component
-public class OrganisationRepository {
-
-    private static final Logger logger = LoggerFactory.getLogger(OrganisationRepository.class);
+public class OrganisationRepository extends AbstractRepository {
 
     private DSLContext connection;
 
@@ -28,75 +23,80 @@ public class OrganisationRepository {
         this.connection = connection;
     }
 
-    public List<Organisation> list(String name, String town, String county,
-                                   String country, String postCode,
-                                   String type) {
+    public List<Organisation> find(List<String> fields, Map<String, List<String>> constraints) {
 
-        SelectJoinStep from = connection.select(ORGANISATION.fields()).from(ORGANISATION);
+        Field[] select = ORGANISATION.fields();
 
-        if (town != null || county != null || country != null || postCode != null) {
-            from = from.join(ADDRESS).on(ADDRESS.ORGANISATION_ID.eq(ORGANISATION.ID));
-        }
+        Set<Field> selectedFields = new HashSet<>();
+        if (fields != null) {
+            for (String field : fields) {
 
-        SelectConditionStep where = from.where(ORGANISATION.ID.isNotNull());
-        if (name != null) {
-            where = where.and(ORGANISATION.NAME.eq(name));
-        }
-        if (town != null) {
-            where = where.and(ADDRESS.TOWN.eq(town));
-        }
-        if (county != null) {
-            where = where.and(ADDRESS.COUNTY.eq(county));
-        }
-        if (country != null) {
-            where = where.and(ADDRESS.COUNTRY.eq(country));
-        }
-        if (postCode != null) {
-            where = where.and(ADDRESS.POSTCODE.eq(postCode.replaceAll(" ", "").toUpperCase()));
-        }
-        if (type != null) {
-            where = where.and(ORGANISATION.TYPE.eq(type));
+                String formattedField = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, field);
+                for (Field dbField : ORGANISATION.fields()) {
+
+                    if (dbField.getName().startsWith(formattedField)) {
+                        selectedFields.add(dbField);
+                    }
+                }
+            }
+
+            if (!selectedFields.isEmpty()) {
+                selectedFields.add(ORGANISATION.ORGANISATION_ID);
+                select = selectedFields.toArray(new Field[selectedFields.size()]);
+            }
         }
 
-        return where.fetchInto(Organisation.class);
+        SelectConditionStep<Record> where = connection
+            .select(select).from(ORGANISATION).where(ORGANISATION.ORGANISATION_ID.isNotNull());
+
+        if (constraints != null) {
+            for (String criteria : constraints.keySet()) {
+
+                String formattedField = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, criteria).replaceAll("\\.", "_");
+
+                if (ORGANISATION.field(formattedField) instanceof TableField) {
+
+                    TableField field = (TableField) ORGANISATION.field(formattedField);
+
+                    if (field.getDataType().isString()) {
+                        appendStringClauses(field, constraints.get(criteria), where);
+
+                    } else if (field.getDataType().isDateTime()) {
+                        appendTimestampClauses(field, constraints.get(criteria), where);
+
+                    } else if (field.getDataType().isNumeric() && field.getDataType().hasPrecision()) {
+                        appendBigDecimalClauses(field, constraints.get(criteria), where);
+
+                    } else if (field.getDataType().isNumeric()) {
+                        appendLongClauses(field, constraints.get(criteria), where);
+                    }
+                }
+            }
+        }
+
+        List<Organisation> stockItems = where.fetchInto(Organisation.class);
+
+        return stockItems;
     }
 
     public Organisation get(String id) {
-        return connection.selectFrom(ORGANISATION).where(ORGANISATION.ID.eq(id)).fetchOneInto(Organisation.class);
+
+        Organisation organisation = connection.selectFrom(ORGANISATION).where(ORGANISATION.ORGANISATION_ID.eq(id)).fetchOneInto(Organisation.class);
+
+//        stockItem.setFeatures(connection.selectFrom(FEATURE).where(FEATURE.STOCK_ITEM_ID.eq(id)).orderBy(FEATURE.ORDINAL).fetchInto(Feature.class));
+//        stockItem.setMedia(connection.selectFrom(MEDIA).where(MEDIA.STOCK_ITEM_ID.eq(id)).orderBy(MEDIA.ORDINAL).fetchInto(Media.class));
+
+        return organisation;
     }
 
-    public String add(Organisation organisation) {
-        try {
-            OrganisationRecord record = new OrganisationRecord();
-            record.setId(UUID.randomUUID().toString());
-            record.setName(organisation.getName());
-            record.setDescription(organisation.getDescription());
-            record.setType(organisation.getType());
-            record.setWebsiteUrl(organisation.getWebsiteUrl());
-            connection.newRecord(ORGANISATION, record).store();
-            return record.getId();
-        } catch (Exception e) {
-            logger.error("Failed to add Organisation " + organisation, e);
-            throw new RuntimeException("Failed to add Organisation " + organisation, e);
-        }
-    }
+    public Organisation save(Organisation organisation) {
 
-    public void update(Organisation organisation) {
-        try {
-            connection.update(ORGANISATION)
-                    .set(ORGANISATION.NAME, organisation.getName())
-                    .set(ORGANISATION.DESCRIPTION, organisation.getDescription())
-                    .set(ORGANISATION.TYPE, organisation.getType())
-                    .set(ORGANISATION.WEBSITE_URL, organisation.getWebsiteUrl())
-                    .where(ORGANISATION.ID.eq(organisation.getId()));
-        } catch (Exception e) {
-            logger.error("Failed to update Organisation " + organisation, e);
-            throw new RuntimeException("Failed to update Organisation " + organisation, e);
-        }
-
+        return null;
     }
 
     public void delete(String id) {
-        connection.deleteFrom(ORGANISATION).where(ORGANISATION.ID.eq(id));
+
     }
+
+
 }

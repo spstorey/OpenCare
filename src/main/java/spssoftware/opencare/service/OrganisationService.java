@@ -1,12 +1,15 @@
 package spssoftware.opencare.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import spssoftware.opencare.domain.Organisation;
 import spssoftware.opencare.repository.OrganisationRepository;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrganisationService {
@@ -21,33 +24,33 @@ public class OrganisationService {
         this.openCareObjectMapper = openCareObjectMapper;
     }
 
-    public List<Organisation> list(String name, String town, String county,
-                                   String country, String postCode,
-                                   String type) {
-        return organisationRepository.list(name, town, county, country, postCode, type);
+    public List<Organisation> find(List<String> fields, Map<String, List<String>> constraints) {
+
+        return Lists.newArrayList(organisationRepository.find(fields, constraints));
     }
 
     public Organisation get(String id) {
         return organisationRepository.get(id);
     }
 
-    public String add(Organisation organisation) {
-        return organisationRepository.add(organisation);
+    @Transactional
+    public Organisation save(Organisation organisation) {
+        return organisationRepository.save(organisation);
     }
 
-    public void update(Organisation organisation) {
-        organisationRepository.update(organisation);
-    }
-
-    public void patch(String id, JSONObject patch) {
+    @Transactional
+    public Organisation patch(String id, JSONObject patch) {
 
         Organisation organisation = get(id);
 
-        if (organisation != null) {
-            organisationRepository.update(openCareObjectMapper.patchObject(patch, get(id)));
+        if (organisation == null) {
+            return null;
+        } else {
+            return organisationRepository.save(openCareObjectMapper.patchObject(patch, get(id)));
         }
     }
 
+    @Transactional
     public void delete(String id) {
         organisationRepository.delete(id);
     }
