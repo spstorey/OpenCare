@@ -10,6 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <skipTests>false</skipTests>
 
         <db.driver>org.h2.Driver</db.driver>
         <compile.db.url>jdbc:h2:file:./target/h2/compile-db</compile.db.url>
@@ -17,37 +18,30 @@
         <db.username>sa</db.username>
         <db.password></db.password>
 
-        <skipTests>false</skipTests>
-        <spring-boot.version>1.3.1.RELEASE</spring-boot.version>
-        <spring.version>4.2.4.RELEASE</spring.version>
-        <jooq.version>3.7.2</jooq.version>
+        <spring-boot.version>1.4.3.RELEASE</spring-boot.version>
+        <spring.version>4.3.5.RELEASE</spring.version>
+        <jooq.version>3.9.1</jooq.version>
     </properties>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.3.RELEASE</version>
+    </parent>
 
     <dependencies>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>${spring-boot.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-            <version>${spring-boot.version}</version>
+            <groupId>org.springframework.hateoas</groupId>
+            <artifactId>spring-hateoas</artifactId>
+            <version>0.23.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -55,114 +49,63 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.plugin</groupId>
+            <artifactId>spring-plugin-core</artifactId>
+            <version>1.2.0.RELEASE</version>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework.hateoas</groupId>
-            <artifactId>spring-hateoas</artifactId>
-            <version>0.19.0.RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>4.0.3</version>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>3.9.1</version>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>2.4.5</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.24</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>21.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.12</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ma.glasnost.orika</groupId>
             <artifactId>orika-core</artifactId>
             <version>1.4.6</version>
         </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <version>${jooq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.190</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.plugin</groupId>
-            <artifactId>spring-plugin-core</artifactId>
-            <version>1.2.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.flyway</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.8</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>uk.co.autotrader</groupId>-->
-            <!--<artifactId>traverson4j-hc4</artifactId>-->
-            <!--<version>0.7</version>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>com.googlecode.jsontoken</groupId>
-            <artifactId>jsontoken</artifactId>
-            <version>1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>joda-time</groupId>
-                    <artifactId>joda-time</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
-        <!-- TEST -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -183,17 +126,34 @@
             <version>1.2.2</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-websocket</artifactId>-->
+            <!--<version>${spring-boot.version}</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-messaging</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-context</artifactId>-->
+            <!--<version>${spring.version}</version>-->
+        <!--</dependency>-->
 
     <build>
         <finalName>opencare</finalName>
+
         <plugins>
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -203,6 +163,16 @@
                 </executions>
                 <configuration>
                     <addResources>true</addResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 
@@ -241,7 +211,6 @@
                             <url>${runtime.db.url}</url>
                             <username>${db.username}</username>
                             <password>${db.password}</password>
-                            <autocommit>true</autocommit>
                             <srcFiles>
                                 <srcFile>src/test/resources/setup-h2-db.sql</srcFile>
                             </srcFiles>
@@ -253,25 +222,24 @@
                     <dependency>
                         <groupId>com.h2database</groupId>
                         <artifactId>h2</artifactId>
-                        <version>1.4.190</version>
+                        <version>1.4.192</version>
                     </dependency>
                 </dependencies>
             </plugin>
 
             <plugin>
-                <groupId>com.googlecode.flyway</groupId>
+                <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>4.0.3</version>
                 <configuration>
-                    <user>sa</user>
-                    <password></password>
                     <url>${compile.db.url}</url>
+                    <user>${db.username}</user>
                     <table>CHANGELOG</table>
                     <locations>
                         <location>filesystem:src/main/resources/db/migration</location>
                     </locations>
                     <schemas>
-                        <schema>OPENCARE</schema>
+                        <schema>opencare</schema>
                     </schemas>
                 </configuration>
                 <executions>
@@ -288,7 +256,7 @@
             <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jooq.version}</version>
+                <version>3.9.1</version>
 
                 <executions>
                     <execution>
@@ -309,9 +277,8 @@
                                 <database>
                                     <name>org.jooq.util.h2.H2Database</name>
                                     <includes>.*</includes>
-                                    <excludes></excludes>
                                     <dateAsTimestamp>true</dateAsTimestamp>
-                                    <inputSchema>OPENCARE</inputSchema>
+                                    <inputSchema>opencare</inputSchema>
                                 </database>
                                 <generate>
                                     <deprecated>false</deprecated>
@@ -319,7 +286,7 @@
                                     <pojos>true</pojos>
                                 </generate>
                                 <target>
-                                    <packageName>spssoftware.opencare.generated</packageName>
+                                    <packageName>spssoftware.generated</packageName>
                                     <directory>target/generated-sources/java</directory>
                                 </target>
                             </generator>
@@ -330,22 +297,7 @@
                     <dependency>
                         <groupId>com.h2database</groupId>
                         <artifactId>h2</artifactId>
-                        <version>1.4.190</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jooq</groupId>
-                        <artifactId>jooq</artifactId>
-                        <version>${jooq.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jooq</groupId>
-                        <artifactId>jooq-codegen</artifactId>
-                        <version>${jooq.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.jooq</groupId>
-                        <artifactId>jooq-meta</artifactId>
-                        <version>${jooq.version}</version>
+                        <version>1.4.192</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -396,85 +348,6 @@
                     <classpathScope>test</classpathScope>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <!--<plugin>-->
-                <!--<groupId>org.jacoco</groupId>-->
-                <!--<artifactId>jacoco-maven-plugin</artifactId>-->
-                <!--<version>0.7.1.201405082137</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>jacoco-initialize</id>-->
-                        <!--<goals>-->
-                            <!--<goal>prepare-agent</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>check</id>-->
-                        <!--<goals>-->
-                            <!--<goal>check</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<rules>-->
-                                <!--<rule>-->
-                                    <!--<element>CLASS</element>-->
-                                    <!--<excludes>-->
-                                        <!--<exclude>*Test</exclude>-->
-                                    <!--</excludes>-->
-                                    <!--<limits>-->
-                                        <!--<limit>-->
-                                            <!--<counter>LINE</counter>-->
-                                            <!--<value>COVEREDRATIO</value>-->
-                                            <!--<minimum>0.70</minimum>-->
-                                        <!--</limit>-->
-                                        <!--<limit>-->
-                                            <!--<counter>BRANCH</counter>-->
-                                            <!--<value>COVEREDRATIO</value>-->
-                                            <!--<minimum>0.60</minimum>-->
-                                        <!--</limit>-->
-                                        <!--<limit>-->
-                                            <!--<counter>LINE</counter>-->
-                                            <!--<value>TOTALCOUNT</value>-->
-                                            <!--<minimum>0.80</minimum>-->
-                                        <!--</limit>-->
-                                    <!--</limits>-->
-                                <!--</rule>-->
-                                <!--<rule>-->
-                                    <!--<element>PACKAGE</element>-->
-                                    <!--<excludes>-->
-                                        <!--<exclude>*Test</exclude>-->
-                                    <!--</excludes>-->
-                                    <!--<limits>-->
-                                        <!--<limit>-->
-                                            <!--<counter>LINE</counter>-->
-                                            <!--<value>COVEREDRATIO</value>-->
-                                            <!--<minimum>0.75</minimum>-->
-                                        <!--</limit>-->
-                                        <!--<limit>-->
-                                            <!--<counter>BRANCH</counter>-->
-                                            <!--<value>COVEREDRATIO</value>-->
-                                            <!--<minimum>0.60</minimum>-->
-                                        <!--</limit>-->
-                                    <!--</limits>-->
-                                <!--</rule>-->
-                            <!--</rules>-->
-                            <!--<excludes>-->
-                                <!--<exclude>uk/co/autotrader/dozor/config/*.class</exclude>-->
-                                <!--<exclude>uk/co/autotrader/dozor/App.class</exclude>-->
-                            <!--</excludes>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
         </plugins>
 
         <resources>
