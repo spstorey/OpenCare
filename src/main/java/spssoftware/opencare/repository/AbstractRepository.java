@@ -1,15 +1,107 @@
 package spssoftware.opencare.repository;
 
 
-import org.jooq.Record;
-import org.jooq.SelectConditionStep;
-import org.jooq.TableField;
+import com.google.common.base.CaseFormat;
+import org.jooq.*;
+import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class AbstractRepository {
+public class AbstractRepository<T, U extends UpdatableRecord> {
+
+    DSLContext connection;
+    Table<U> TABLE;
+    Field ID;
+    Class<T> objectClass;
+
+    public List<T> find(List<String> fields, Map<String, List<String>> constraints) {
+
+        Field[] select = TABLE.fields();
+
+        Set<Field> selectedFields = new HashSet<>();
+        if (fields != null) {
+            for (String field : fields) {
+
+                String formattedField = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, field);
+                for (Field dbField : TABLE.fields()) {
+
+                    if (dbField.getName().startsWith(formattedField)) {
+                        selectedFields.add(dbField);
+                    }
+                }
+            }
+
+            if (!selectedFields.isEmpty()) {
+                selectedFields.add(ID);
+                select = selectedFields.toArray(new Field[selectedFields.size()]);
+            }
+        }
+
+        SelectConditionStep<Record> where = connection
+                .select(select).from(TABLE).where(ID.isNotNull());
+
+        if (constraints != null) {
+            for (String criteria : constraints.keySet()) {
+
+                String formattedField = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, criteria).replaceAll("\\.", "_");
+
+                if (TABLE.field(formattedField) instanceof TableField) {
+
+                    TableField field = (TableField) TABLE.field(formattedField);
+
+                    if (field.getDataType().isString()) {
+                        appendStringClauses(field, constraints.get(criteria), where);
+
+                    } else if (field.getDataType().isDateTime()) {
+                        appendTimestampClauses(field, constraints.get(criteria), where);
+
+                    } else if (field.getDataType().isNumeric() && field.getDataType().hasPrecision()) {
+                        appendBigDecimalClauses(field, constraints.get(criteria), where);
+
+                    } else if (field.getDataType().isNumeric()) {
+                        appendLongClauses(field, constraints.get(criteria), where);
+                    }
+                }
+            }
+        }
+
+        List<T> results = where.fetchInto(objectClass);
+
+        return results;
+    }
+
+    public T get(String id) {
+
+        T object = connection.selectFrom(TABLE).where(ID.eq(id)).fetchOneInto(objectClass);
+        return object;
+    }
+
+    public U getRecord(String id) {
+
+        return connection.selectFrom(TABLE).where(ID.eq(id)).fetchOne();
+    }
+
+    public T save(String id, T object) {
+
+        U originalObject = getRecord(id);
+        BeanUtils.copyProperties(object, originalObject);
+        originalObject.store();
+
+        return get(id);
+    }
+
+    public void delete(String id) {
+
+        int deleteCount = connection.deleteFrom(TABLE).where(ID.eq(id)).execute();
+        if (deleteCount == 0) {
+            throw new RuntimeException("Organisation [id="+id+"] was NOT deleted");
+        }
+    }
 
     SelectConditionStep<Record> appendStringClauses(TableField<?, String> field, List<String> values, SelectConditionStep<Record> where) {
 

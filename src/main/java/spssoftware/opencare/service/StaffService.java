@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import spssoftware.opencare.domain.Staff;
 import spssoftware.opencare.repository.StaffRepository;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class StaffService {
@@ -18,14 +21,12 @@ public class StaffService {
     private OpenCareObjectMapper openCareObjectMapper;
 
     @Autowired
-    public StaffService(StaffRepository userRepository,
-                        OpenCareObjectMapper openCareObjectMapper) {
+    public StaffService(StaffRepository userRepository, OpenCareObjectMapper openCareObjectMapper) {
         this.staffRepository = userRepository;
         this.openCareObjectMapper = openCareObjectMapper;
     }
 
     public List<Staff> find(List<String> fields, Map<String, List<String>> constraints) {
-
         return Lists.newArrayList(staffRepository.find(fields, constraints));
     }
 
@@ -34,8 +35,10 @@ public class StaffService {
     }
 
     @Transactional
-    public Staff save(Staff staff) {
-        return staffRepository.save(staff);
+    public Staff create(Staff staff) {
+        staff.setStaffId(UUID.randomUUID().toString());
+        staff.setCreatedDate(Timestamp.from(Instant.now()));
+        return staffRepository.save(staff.getStaffId(), staff);
     }
 
     @Transactional
@@ -46,7 +49,10 @@ public class StaffService {
         if (staff == null) {
             return null;
         } else {
-            return staffRepository.save(openCareObjectMapper.patchObject(patch, get(id)));
+            Staff mergedStaff = openCareObjectMapper.patchObject(patch, get(id));
+            mergedStaff.setStaffId(id);
+            mergedStaff.setModifiedDate(Timestamp.from(Instant.now()));
+            return staffRepository.save(id, mergedStaff);
         }
     }
 

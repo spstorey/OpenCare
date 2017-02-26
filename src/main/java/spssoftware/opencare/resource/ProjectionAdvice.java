@@ -22,7 +22,11 @@ public class ProjectionAdvice extends AbstractMappingJacksonResponseBodyAdvice {
     protected void beforeBodyWriteInternal(MappingJacksonValue bodyContainer, MediaType contentType, MethodParameter returnType, ServerHttpRequest request, ServerHttpResponse response) {
 
         SimpleFilterProvider filters = new SimpleFilterProvider();
+        filters.addFilter("Staff", SimpleBeanPropertyFilter.serializeAll());
         filters.addFilter("Organisation", SimpleBeanPropertyFilter.serializeAll());
+        filters.addFilter("Patient", SimpleBeanPropertyFilter.serializeAll());
+        filters.addFilter("Clinic", SimpleBeanPropertyFilter.serializeAll());
+        filters.addFilter("Appointment", SimpleBeanPropertyFilter.serializeAll());
         bodyContainer.setFilters(filters);
 
         if (request instanceof ServletServerHttpRequest) { //if instance resource, prefix content.
@@ -33,7 +37,11 @@ public class ProjectionAdvice extends AbstractMappingJacksonResponseBodyAdvice {
                 Set<String> filterFields = Arrays.stream(fields).flatMap(param -> Arrays.stream(param.split(","))).collect(Collectors.toSet());
                 filterFields.add("_links");
 
+                filters.addFilter("Staff", SimpleBeanPropertyFilter.filterOutAllExcept(filterFields));
                 filters.addFilter("Organisation", SimpleBeanPropertyFilter.filterOutAllExcept(filterFields));
+                filters.addFilter("Patient", SimpleBeanPropertyFilter.filterOutAllExcept(filterFields));
+                filters.addFilter("Clinic", SimpleBeanPropertyFilter.filterOutAllExcept(filterFields));
+                filters.addFilter("Appointment", SimpleBeanPropertyFilter.filterOutAllExcept(filterFields));
             }
         }
     }

@@ -18,6 +18,7 @@ public class OrganisationAssembler extends ResourceAssemblerSupport<spssoftware.
 
     @Override
     public Organisation toResource(spssoftware.opencare.domain.Organisation entity) {
+
         Organisation resource = createResourceWithId(entity.getOrganisationId(), entity);
         resourceMapper.map(entity, resource);
         return resource;

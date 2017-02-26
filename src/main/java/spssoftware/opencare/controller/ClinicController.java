@@ -11,9 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import spssoftware.opencare.resource.Organisation;
-import spssoftware.opencare.resource.assembler.OrganisationAssembler;
-import spssoftware.opencare.service.OrganisationService;
+import spssoftware.opencare.resource.Clinic;
+import spssoftware.opencare.resource.assembler.ClinicAssembler;
+import spssoftware.opencare.service.ClinicService;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,18 +23,18 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/organisations")
-public class OrganisationController {
+@RequestMapping("/clinics")
+public class ClinicController {
 
-    private OrganisationService organisationService;
-    private OrganisationAssembler organisationAssembler;
+    private ClinicService clinicService;
+    private ClinicAssembler clinicAssembler;
 
     @Autowired
-    public OrganisationController(OrganisationService organisationService,
-                                  OrganisationAssembler organisationAssembler) {
+    public ClinicController(ClinicService clinicService,
+                            ClinicAssembler clinicAssembler) {
 
-        this.organisationService = organisationService;
-        this.organisationAssembler = organisationAssembler;
+        this.clinicService = clinicService;
+        this.clinicAssembler = clinicAssembler;
     }
 
     @RequestMapping(
@@ -42,11 +42,11 @@ public class OrganisationController {
     public Resources<?> find(@RequestParam(value = "fields", required = false) List<String> fields,
                              @RequestParam(required = false)  MultiValueMap<String, String> constraints) {
 
-        List<Organisation> results = organisationService.find(fields, constraints).stream().map(o -> organisationAssembler.toResource(o)).collect(Collectors.toList());
+        List<Clinic> results = clinicService.find(fields, constraints).stream().map(o -> clinicAssembler.toResource(o)).collect(Collectors.toList());
 
-        Link self = linkTo(methodOn(OrganisationController.class).find(fields, constraints)).withSelfRel();
+        Link self = linkTo(methodOn(ClinicController.class).find(fields, constraints)).withSelfRel();
         if (results.isEmpty()) {
-            EmbeddedWrapper embeddedWrapper = new EmbeddedWrappers(false).emptyCollectionOf(Organisation.class);
+            EmbeddedWrapper embeddedWrapper = new EmbeddedWrappers(false).emptyCollectionOf(Clinic.class);
             return new Resources<>(Collections.singletonList(embeddedWrapper), self);
         } else {
             return new Resources<>(results, self);
@@ -56,14 +56,14 @@ public class OrganisationController {
     @RequestMapping(
             value = "/{id}",
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Organisation> get(@PathVariable("id") String id) {
+    public ResponseEntity<Clinic> get(@PathVariable("id") String id) {
 
-        spssoftware.opencare.domain.Organisation entity = organisationService.get(id);
+        spssoftware.opencare.domain.Clinic entity = clinicService.get(id);
 
         if (entity == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(organisationAssembler.toResource(entity), HttpStatus.OK);
+            return new ResponseEntity<>(clinicAssembler.toResource(entity), HttpStatus.OK);
         }
     }
 
@@ -71,23 +71,23 @@ public class OrganisationController {
             method = RequestMethod.POST,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Organisation create(@RequestBody spssoftware.opencare.domain.Organisation organisation) {
+    public Clinic create(@RequestBody spssoftware.opencare.domain.Clinic clinic) {
 
-        return organisationAssembler.toResource(organisationService.create(organisation));
+        return clinicAssembler.toResource(clinicService.create(clinic));
     }
 
     @RequestMapping(value = "/{id}",
             method = RequestMethod.PATCH,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Organisation> patch(@PathVariable("id") String id, @RequestBody JSONObject patch) {
+    public ResponseEntity<Clinic> patch(@PathVariable("id") String id, @RequestBody JSONObject patch) {
 
-        spssoftware.opencare.domain.Organisation entity = organisationService.patch(id, patch);
+        spssoftware.opencare.domain.Clinic entity = clinicService.patch(id, patch);
 
         if (entity == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(organisationAssembler.toResource(entity), HttpStatus.OK);
+            return new ResponseEntity<>(clinicAssembler.toResource(entity), HttpStatus.OK);
         }
     }
 
@@ -95,7 +95,7 @@ public class OrganisationController {
             method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@PathVariable("id") String id) {
 
-        organisationService.delete(id);
+        clinicService.delete(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

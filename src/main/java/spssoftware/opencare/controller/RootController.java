@@ -21,7 +21,9 @@ public class RootController {
         root.add(linkTo(methodOn(RootController.class).root()).withSelfRel());
         root.add(linkTo(methodOn(StaffController.class).find(null, null)).withRel("staff"));
         root.add(linkTo(methodOn(OrganisationController.class).find(null,null)).withRel("organisations"));
-        //root.add(linkTo(methodOn(PatientController.class).list(null,null,null)).withRel("patients"));
+        root.add(linkTo(methodOn(ClinicController.class).find(null,null)).withRel("clinics"));
+        root.add(linkTo(methodOn(AppointmentController.class).find(null,null)).withRel("appointments"));
+        root.add(linkTo(methodOn(PatientController.class).find(null,null)).withRel("patients"));
         return root;
     }
 }

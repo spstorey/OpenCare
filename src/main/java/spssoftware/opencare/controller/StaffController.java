@@ -2,7 +2,10 @@ package spssoftware.opencare.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.core.EmbeddedWrapper;
+import org.springframework.hateoas.core.EmbeddedWrappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import spssoftware.opencare.resource.Staff;
 import spssoftware.opencare.resource.assembler.StaffAssembler;
 import spssoftware.opencare.service.StaffService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,14 +39,19 @@ public class StaffController {
 
     @RequestMapping(
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE})
-    public Resources<Staff> find(@RequestParam(value = "fields", required = false) List<String> fields,
-                                 @RequestParam(value = "constraints", required = false) MultiValueMap<String, String> constraints) {
-        return new Resources<>(
-                staffService.find(fields, constraints)
-                        .stream()
-                        .map(o -> staffAssembler.toResource(o)).collect(Collectors.toList()),
-                linkTo(methodOn(StaffController.class).find(fields, constraints)).withSelfRel()
-        );
+    public Resources<?> find(@RequestParam(value = "fields", required = false) List<String> fields,
+                             @RequestParam(required = false) MultiValueMap<String, String> constraints) {
+
+
+        List<Staff> staff = staffService.find(fields, constraints).stream().map(o -> staffAssembler.toResource(o)).collect(Collectors.toList());
+
+        Link self = linkTo(methodOn(StaffController.class).find(fields, constraints)).withSelfRel();
+        if (staff.isEmpty()) {
+            EmbeddedWrapper embeddedWrapper = new EmbeddedWrappers(false).emptyCollectionOf(Staff.class);
+            return new Resources<>(Collections.singletonList(embeddedWrapper), self);
+        } else {
+            return new Resources<>(staff, self);
+        }
     }
 
     @RequestMapping(
@@ -54,25 +63,13 @@ public class StaffController {
         return staffAssembler.toResource(entity);
     }
 
-
     @RequestMapping(
             method = RequestMethod.POST,
             produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Staff add(@RequestBody spssoftware.opencare.domain.Staff Staff) {
+    public Staff add(@RequestBody spssoftware.opencare.domain.Staff staff) {
 
-        return staffAssembler.toResource(staffService.save(Staff));
-    }
-
-    @RequestMapping(
-            value = "/{id}",
-            method = RequestMethod.PUT,
-            produces = {"application/hal+json", MediaType.APPLICATION_JSON_VALUE},
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Staff update(@PathVariable("id") String id, @RequestBody spssoftware.opencare.domain.Staff Staff) {
-
-        Staff.setStaffId(id);
-        return staffAssembler.toResource(staffService.save(Staff));
+        return staffAssembler.toResource(staffService.create(staff));
     }
 
     @RequestMapping(value = "/{id}",
